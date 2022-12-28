@@ -1,0 +1,25 @@
+##lefse analysis 
+source activate lefse
+lefse-format_input.py tax.txt tax.in -c 1 -o 1000000
+run_lefse.py tax.in tax.res -l 2 -a 0.05 -w 0.05
+lefse-plot_features.py tax.res tax.pdf --format pdf
+
+library(circlize)
+library(ComplexHeatmap)
+#plot circoheatmap from lefse outcome
+data <- read.delim("clipboard",header = T,row.names = 1)
+lefse <- read.delim("clipboard",header = F)
+x <- data[lefse$V1,]
+data <- log(data)
+data <- t(scale(t(x)))
+col_fun1 = colorRamp2(c(2, 0, -2), c("red","white","#32A907"))
+circos.par(gap.after = c(20))
+circos.heatmap(data, col  = col_fun1,
+               dend.side = "inside",rownames.side = "outside",
+               rownames.cex=0.35,
+               rownames.font=1,track.height = 0.15,
+               cluster = F)
+lgd = Legend(title = "", col_fun = col_fun1,direction = c("horizontal"))
+grid.draw(lgd)
+circos.clear()
+
